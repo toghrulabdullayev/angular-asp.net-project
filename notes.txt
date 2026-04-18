@@ -1,0 +1,12 @@
+(1) Init commands:
+      ng new client
+      dotnet new webapi -n server -au None --no-https
+
+(2) Angular CLI:
+      ng generate c user -> generate a user component
+      ng generate s shared/services/auth -> generate an auth service in shared/services/
+      NOTE: "ng g" is the shorthand
+
+(3) .NET intellisense config (mostly done automatically when opening a .NET project):
+      dotnet new sln
+      dotnet sln add YourProject.csproj
