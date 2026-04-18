@@ -8,5 +8,20 @@
       NOTE: "ng g" is the shorthand
 
 (3) .NET intellisense config (mostly done automatically when opening a .NET project):
-      dotnet new sln
-      dotnet sln add YourProject.csproj
+      dotnet new sln -> generates a solution file
+      dotnet sln add YourProject.csproj -> adds .csproj to it
+
+(4) .NET CLI:
+      dotnet new gitignore
+      dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore --version 8.0.26
+      NOTE: version should be specified if the used .NET version is not the latest
+
+(5) EntityFramework (EF) CLI:
+      Installation and setup:
+        dotnet tool install --global dotnet-ef
+        dotnet add package Microsoft.EntityFrameworkCore.Design
+        dotnet add package Microsoft.EntityFrameworkCore.Tools
+
+      Migrations:
+        dotnet ef migrations add InitialCreate
+        dotnet ef database update
