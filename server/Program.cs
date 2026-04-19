@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Server.Models;
+using Server.Models; //! Note: some imports are not implicit
 
 // creates DI container, config system, logging, hosting environment and etc
 var builder = WebApplication.CreateBuilder(args);
@@ -18,9 +19,19 @@ builder.Services.AddSwaggerGen();
 
 // registers identity services (auth, entities, and etc. Refer to Identity architecture docs)
 builder.Services
-  .AddIdentityApiEndpoints<IdentityUser>()
+  .AddIdentityApiEndpoints<AppUser>()
   .AddEntityFrameworkStores<AppDbContext>();
 
+// changes default configs in Identity package
+builder.Services.Configure<IdentityOptions>(options =>
+{
+  options.Password.RequireDigit = false;
+  options.Password.RequireUppercase = false;
+  options.Password.RequireLowercase = false;
+  options.User.RequireUniqueEmail = true;
+});
+
+// DevDB is pulled from appsettings.json
 builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DevDB")));
 
@@ -42,5 +53,38 @@ app.UseAuthorization();
 // maps routes to controllers
 app.MapControllers();
 
+// maps respective routes (auth related endpoints) and groups into /api
+app
+  .MapGroup("/api")
+  .MapIdentityApi<AppUser>();
+
+app.MapPost("/api/signup", async (
+  UserManager<AppUser> userManager,
+  [FromBody] UserRegistrationModel userRegistrationModel
+) =>
+{
+  //? Object Initializer, equivalent of user.Email=...;user.FullName=...;
+  AppUser user = new AppUser()
+  {
+    UserName = userRegistrationModel.Email, // username is required in Identity, and this is the only way to bypass it
+    Email = userRegistrationModel.Email,
+    FullName = userRegistrationModel.FullName,
+  };
+
+  //* Password is passed here because it gets hashed, unlike if you passed it to new AppUser()
+  var result = await userManager.CreateAsync(user, userRegistrationModel.Password!);
+  if (result.Succeeded)
+    return Results.Ok(result);
+  else
+    return Results.BadRequest(result);
+});
+
 // starts the server and listens for HTTP requests
 app.Run();
+
+public class UserRegistrationModel
+{
+  public string? Email { get; set; }
+  public string? Password { get; set; }
+  public string? FullName { get; set; }
+}
