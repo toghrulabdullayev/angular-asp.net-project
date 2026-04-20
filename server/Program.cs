@@ -47,6 +47,11 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
+// region and endregion makes this part of the code collapsible, no other functional effects
+#region Config. CORS
+app.UseCors(options => options.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader());
+#endregion
+
 // checks permissions and runs after authentication if exists
 app.UseAuthorization();
 

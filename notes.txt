@@ -5,6 +5,7 @@
 (2) Angular CLI:
       ng generate c user -> generate a user component
       ng generate s shared/services/auth -> generate an auth service in shared/services/
+      ng g p shared/pipes/firstKey -> generate a pipe in shared/pipes
       NOTE: "ng g" is the shorthand
 
 (3) .NET intellisense config (mostly done automatically when opening a .NET project):

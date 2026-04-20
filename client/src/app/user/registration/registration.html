@@ -7,6 +7,9 @@
       placeholder="Full Name"
       formControlName="fullName"
     />
+    @if (hasDisplayableError('fullName') && form.controls.fullName.hasError('required')) {
+      <div class="error-feedback">Please enter your full name.</div>
+    }
   </div>
   <div class="mb-3">
     <input
@@ -15,6 +18,14 @@
       placeholder="Email"
       formControlName="email"
     />
+    @if (hasDisplayableError('email')) {
+      @if (form.controls.email.hasError('required')) {
+        <div class="error-feedback">Please enter your email address.</div>
+      }
+      @if (form.controls.email.hasError('email')) {
+        <div class="error-feedback">Please enter a valid email address.</div>
+      }
+    }
   </div>
   <div class="mb-3">
     <input
@@ -23,6 +34,22 @@
       placeholder="Password"
       formControlName="password"
     />
+    @if (hasDisplayableError('password')) {
+      <!-- container is used as an example here; otherwise it's redundant -->
+      <ng-container>
+        @switch (form.controls.password.errors | firstKey) {
+          @case ('required') {
+            <div class="error-feedback">Please enter your password.</div>
+          }
+          @case ('minlength') {
+            <div class="error-feedback">At least 6 characters required.</div>
+          }
+          @case ('pattern') {
+            <div class="error-feedback">One or more special character(s).</div>
+          }
+        }
+      </ng-container>
+    }
   </div>
   <div class="mb-3">
     <input
@@ -31,6 +58,11 @@
       placeholder="Confirm Password"
       formControlName="confirmPassword"
     />
+    @if (
+      hasDisplayableError('confirmPassword') && form.controls.confirmPassword.hasError('passwordMismatch')
+    ) {
+      <div class="error-feedback">Passwords do not match.</div>
+    }
   </div>
   <div class="mt-4">
     <button type="submit" class="btn btn-success w-100 rounded-3">Register</button>
