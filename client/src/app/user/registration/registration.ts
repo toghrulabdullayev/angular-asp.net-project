@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { FirstKeyPipe } from '../../shared/pipes/first-key-pipe';
 import { Auth } from '../../shared/services/auth';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-registration',
@@ -17,8 +18,9 @@ import { Auth } from '../../shared/services/auth';
 })
 export class Registration {
   // constructor(public formBuilder: FormBuilder) {}
-  private formBuilder = inject(FormBuilder); // to fix the error, inject manually
+  private formBuilder: FormBuilder = inject(FormBuilder); // to fix the error, inject manually
   private service: Auth = inject(Auth); // our very own auth service
+  private toastr: ToastrService = inject(ToastrService);
   isSubmitted = false;
 
   passwordMatchValidator: ValidatorFn = (control: AbstractControl): null => {
@@ -57,17 +59,37 @@ export class Registration {
         next: (res: any) => {
           if (res.succeeded) {
             this.form.reset();
-            this.isSubmitted = false
+            this.isSubmitted = false;
+            this.toastr.success('New user created!', 'Registration successful!');
           }
-          console.log(res);
         },
-        error: (err) => console.log('error', err),
+        error: (err) => {
+          if (err.error.errors) {
+            err.error.errors.forEach((err: any) => {
+              switch (err.code) {
+                case 'DuplicateUserName':
+                  break;
+                case 'DuplicateEmail':
+                  this.toastr.error('Email is already taken.', 'Registration failed.');
+                  break;
+                default:
+                  this.toastr.error('Contact the developer', 'Registration failed');
+                  console.log(err);
+                  break;
+              }
+            });
+          } else {
+            this.toastr.error('Contact the developer', 'Registration failed');
+            console.log('error:', err);
+          }
+        },
       });
     }
   }
 
   hasDisplayableError(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return !!control?.invalid && (this.isSubmitted || !!control?.touched);
+    // .dirty means that default value is changed
+    return !!control?.invalid && (this.isSubmitted || !!control?.touched || !!control?.dirty);
   }
 }
