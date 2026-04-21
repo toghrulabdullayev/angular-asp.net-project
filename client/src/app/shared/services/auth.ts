@@ -6,10 +6,14 @@ import { inject, Injectable } from '@angular/core';
 })
 export class Auth {
   private http = inject(HttpClient);
-  baseUrl = 'http://localhost:5054/api';
+  baseURL = 'http://localhost:5054/api';
 
   //! NOTE: this does not send the request yet. This is a lazy (cold) Observable
   createUser(formData: any) {
-    return this.http.post(this.baseUrl + '/signup', formData);
+    return this.http.post(this.baseURL + '/signup', formData);
+  }
+
+  signin(formData: any) {
+    return this.http.post(this.baseURL + '/signin', formData);
   }
 }

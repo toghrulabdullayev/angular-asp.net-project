@@ -8,6 +8,9 @@
       ng g p shared/pipes/firstKey -> generate a pipe in shared/pipes
       NOTE: "ng g" is the shorthand
 
+      ng generate @angular/core:control-flow -> migrates from *ng directives to the @ ones
+      ✔ Which path in your project should be migrated? ./src/app/user/login
+
 (3) .NET intellisense config (mostly done automatically when opening a .NET project):
       dotnet new sln -> generates a solution file
       dotnet sln add YourProject.csproj -> adds .csproj to it

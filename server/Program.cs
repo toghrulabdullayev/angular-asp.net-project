@@ -1,6 +1,9 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Server.Models; //! Note: some imports are not implicit
 
 // creates DI container, config system, logging, hosting environment and etc
@@ -35,6 +38,23 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DevDB")));
 
+builder.Services.AddAuthentication(x =>
+{
+  x.DefaultAuthenticateScheme =
+  x.DefaultChallengeScheme =
+  x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(y =>
+{
+  y.SaveToken = false;
+  y.TokenValidationParameters = new TokenValidationParameters
+  {
+    ValidateIssuerSigningKey = true,
+    IssuerSigningKey = new SymmetricSecurityKey(
+      Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:JWTSecret"]!)
+    ),
+  };
+});
+
 // creates the actual application
 var app = builder.Build();
 
@@ -51,6 +71,8 @@ if (app.Environment.IsDevelopment())
 #region Config. CORS
 app.UseCors(options => options.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader());
 #endregion
+
+app.UseAuthentication();
 
 // checks permissions and runs after authentication if exists
 app.UseAuthorization();
