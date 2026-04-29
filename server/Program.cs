@@ -40,6 +40,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddAuthentication(x =>
 {
+  // chained assignment (x.value1 = x.value2 = x.value3 = ...). Don't get confused by newlines
   x.DefaultAuthenticateScheme =
   x.DefaultChallengeScheme =
   x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
