@@ -1,0 +1,7 @@
+# Editor configuration, see https://editorconfig.org
+root = true
+
+[*.cs]
+indent_style = tab
+tab_width = 2
+indent_size = 2
